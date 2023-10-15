@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build('my-app')
+                }
+            }
+        }
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        docker.image('my-app').push()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            mail to: 'mirasad841@gmail.com',
+                 subject: 'Jenkins Job Successful',
+                 body: 'Jenkins job has completed successfully.'
+        }
+    }
+}
